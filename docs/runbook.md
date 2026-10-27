@@ -1,6 +1,6 @@
-# Operations Runbook: Brivo Edge Fleet & Surveillance Systems
+# Operations Runbook: Edge Fleet & Surveillance Systems
 
-> **Target Audience:** Brivo Operations Engineers, On-Call Site Reliability Engineers  
+> **Target Audience:** Operations Engineers, On-Call Site Reliability Engineers (SRE)  
 > **System:** Distributed Edge Device Fleet & Cloud Surveillance Control Center
 
 ---
@@ -23,7 +23,7 @@
 An on-premise Linux bridge (`bridge-01`, `bridge-02`, or `bridge-03`) has stopped responding to both Prometheus scraping and `/health` heartbeats for more than 10 seconds.
 
 ### Customer / Business Impact
-Access control readers and IP cameras routed through this bridge cannot relay events or video recordings to the Brivo Cloud. Doors may be in fail-safe/fail-secure mode.
+Access control readers and IP cameras routed through this bridge cannot relay events or video recordings to the Cloud Monitoring Control Center. Doors may be in fail-safe/fail-secure mode.
 
 ### Triage & Diagnostic Steps
 1. Verify bridge container status:

@@ -9,7 +9,7 @@
 [![Terraform](https://img.shields.io/badge/Terraform-v1.5+-844FBA?logo=terraform&logoColor=white)](https://www.terraform.io/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-Edge%20AI-5C3EE8?logo=opencv&logoColor=white)](https://opencv.org/)
 
-An enterprise-grade operations and telemetry engineering lab modeled after **Brivo's cloud video surveillance and access control architecture**. 
+An enterprise-grade operations and telemetry engineering lab designed for **distributed edge fleet monitoring, cloud video surveillance, and automated IoT access control systems**. 
 
 This project simulates a distributed edge fleet of Linux bridge devices connecting IP cameras to the cloud. It features real-time synthetic RTSP video streaming, edge computer vision people counting with strict zero-retention privacy guarantees, proactive Prometheus/Alertmanager monitoring, automated Atlassian Jira Cloud incident ticketing with alert deduplication, an autonomous Python self-healing script, and Terraform Infrastructure as Code (IaC) deployed to AWS EC2 with CloudWatch metric alarms and SNS email notifications.
 
@@ -19,49 +19,49 @@ This project simulates a distributed edge fleet of Linux bridge devices connecti
 
 ```mermaid
 flowchart TB
-    subgraph OnPremises["On-Premises Edge Fleet (Simulated IoT Devices)"]
+    subgraph OnPremises["On-Premises Edge Fleet - Simulated IoT Devices"]
         subgraph Bridges["Linux Edge Bridge Fleet"]
-            B1["bridge-01\n(Agent :8001 | NodeExporter :9101)"]
-            B2["bridge-02\n(Agent :8002 | NodeExporter :9102)"]
-            B3["bridge-03\n(Agent :8003 | NodeExporter :9103)"]
+            B1["bridge-01<br/>Agent :8001 | NodeExporter :9101"]
+            B2["bridge-02<br/>Agent :8002 | NodeExporter :9102"]
+            B3["bridge-03<br/>Agent :8003 | NodeExporter :9103"]
         end
 
-        CAM["Synthetic IP Camera\n(MediaMTX + ffmpeg RTSP :8554)"]
-        AI["Edge AI Container\n(OpenCV HOG People Counter :8005)"]
+        CAM["Synthetic IP Camera<br/>MediaMTX + ffmpeg RTSP :8554"]
+        AI["Edge AI Container<br/>OpenCV HOG People Counter :8005"]
 
         CAM -->|RTSP Stream| AI
         CAM -.->|RTSP Feed| Bridges
     end
 
-    subgraph TelemetryStack["Telemetry & Monitoring Core"]
-        BB["Blackbox Exporter (:9115)\nTCP & HTTP Probing"]
-        PROM["Prometheus v2.51.0 (:9090)\nMetrics Scraping & Rules"]
-        AM["Alertmanager v0.27.0 (:9093)\nIncident Grouping & Routing"]
-        GRAF["Grafana v10.4.1 (:3000)\nAuto-Provisioned Dashboards"]
+    subgraph TelemetryStack["Telemetry and Monitoring Core"]
+        BB["Blackbox Exporter :9115<br/>TCP and HTTP Probing"]
+        PROM["Prometheus v2.51.0 :9090<br/>Metrics Scraping and Rules"]
+        AM["Alertmanager v0.27.0 :9093<br/>Incident Grouping and Routing"]
+        GRAF["Grafana v10.4.1 :3000<br/>Auto-Provisioned Dashboards"]
 
-        Bridges -->|Scrape System & Health| PROM
+        Bridges -->|Scrape System and Health| PROM
         CAM -->|TCP Probe 8554| BB
         Bridges -->|HTTP 200 Probe| BB
-        AI -->|Inference Latency & Counts| PROM
+        AI -->|Inference Latency and Counts| PROM
         BB --> PROM
         PROM -->|PromQL Telemetry| GRAF
-        PROM -->|Alert Events (>Threshold)| AM
+        PROM -->|Alert Events Above Threshold| AM
     end
 
-    subgraph OpsAutomation["Operations & Incident Remediation"]
-        TS["Flask Ticket Service (:5001)\nIn-Memory Deduplication Engine"]
-        JIRA["Atlassian Jira Cloud\n(REST API v3 Issue Tracker)"]
-        AUTOF["Autonomous Self-Healing\n(scripts/auto_fix.py)"]
+    subgraph OpsAutomation["Operations and Incident Remediation"]
+        TS["Flask Ticket Service :5001<br/>In-Memory Deduplication Engine"]
+        JIRA["Atlassian Jira Cloud<br/>REST API v3 Issue Tracker"]
+        AUTOF["Autonomous Self-Healing<br/>scripts/auto_fix.py"]
 
         AM -->|Webhook POST /alert| TS
         TS -->|Create Task Issue| JIRA
-        AUTOF -->|Triage, Diagnose & Restart| Bridges
+        AUTOF -->|Triage, Diagnose and Restart| Bridges
     end
 
-    subgraph CloudInfra["AWS Cloud Infrastructure (Terraform)"]
-        EC2["EC2 t3.micro (Amazon Linux 2023)\n2GB Swap + Docker Engine"]
-        CW["CloudWatch Metric Alarms\n(EC2 StatusCheckFailed & CPU > 80%)"]
-        SNS["Amazon SNS Topic\n(Critical Email Notifications)"]
+    subgraph CloudInfra["AWS Cloud Infrastructure - Terraform"]
+        EC2["EC2 t3.micro - Amazon Linux 2023<br/>2GB Swap + Docker Engine"]
+        CW["CloudWatch Metric Alarms<br/>StatusCheckFailed and CPU > 80%"]
+        SNS["Amazon SNS Topic<br/>Critical Email Notifications"]
 
         EC2 --> CW --> SNS
     end
