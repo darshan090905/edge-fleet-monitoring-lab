@@ -1,0 +1,6 @@
+# MediaMTX RTSP Server Configuration
+# Publishes a synthetic video test stream to rtsp://cam:8554/cam
+paths:
+  cam:
+    runOnInit: ffmpeg -re -f lavfi -i testsrc=size=640x480:rate=15 -vcodec libx264 -preset ultrafast -tune zerolatency -b:v 600k -f rtsp rtsp://localhost:8554/cam
+    runOnInitRestart: yes

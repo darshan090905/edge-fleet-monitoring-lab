@@ -1,0 +1,160 @@
+services:
+  # Edge Bridge 01
+  bridge-01:
+    build: ./bridges
+    image: edge-bridge:latest
+    container_name: bridge-01
+    environment:
+      - DEVICE_ID=bridge-01
+      - AGENT_PORT=8000
+    ports:
+      - "8001:8000"
+      - "9101:9100"
+    restart: unless-stopped
+    networks:
+      - brivo-net
+
+  # Edge Bridge 02
+  bridge-02:
+    build: ./bridges
+    image: edge-bridge:latest
+    container_name: bridge-02
+    environment:
+      - DEVICE_ID=bridge-02
+      - AGENT_PORT=8000
+    ports:
+      - "8002:8000"
+      - "9102:9100"
+    restart: unless-stopped
+    networks:
+      - brivo-net
+
+  # Edge Bridge 03
+  bridge-03:
+    build: ./bridges
+    image: edge-bridge:latest
+    container_name: bridge-03
+    environment:
+      - DEVICE_ID=bridge-03
+      - AGENT_PORT=8000
+    ports:
+      - "8003:8000"
+      - "9103:9100"
+    restart: unless-stopped
+    networks:
+      - brivo-net
+
+  # Simulated IP Camera (MediaMTX + ffmpeg RTSP stream)
+  cam:
+    image: bluenviron/mediamtx:latest-ffmpeg
+    container_name: cam
+    ports:
+      - "8554:8554"
+    volumes:
+      - ./camera/mediamtx.yml:/mediamtx.yml:ro
+    restart: unless-stopped
+    networks:
+      - brivo-net
+
+  # Edge AI Computer Vision (OpenCV HOG People Counter)
+  edge-ai:
+    build: ./edge-ai
+    image: edge-ai:latest
+    container_name: edge-ai
+    ports:
+      - "8005:8005"
+    environment:
+      - RTSP_URL=rtsp://cam:8554/cam
+      - METRICS_PORT=8005
+      - TARGET_FPS=1.5
+    restart: unless-stopped
+    networks:
+      - brivo-net
+    depends_on:
+      - cam
+
+  # Prometheus Blackbox Exporter (Network & HTTP Prober)
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.25.0
+    container_name: blackbox-exporter
+    ports:
+      - "9115:9115"
+    volumes:
+      - ./prometheus/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+    restart: unless-stopped
+    networks:
+      - brivo-net
+
+  # Flask Ticket Microservice (Alertmanager Webhook -> Jira)
+  ticket-service:
+    build: ./ticket-service
+    image: ticket-service:latest
+    container_name: ticket-service
+    ports:
+      - "5001:5001"
+    environment:
+      - JIRA_URL=${JIRA_URL:-https://your-domain.atlassian.net}
+      - JIRA_EMAIL=${JIRA_EMAIL:-your-email@example.com}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN:-your-jira-api-token}
+      - JIRA_PROJECT_KEY=${JIRA_PROJECT_KEY:-OPS}
+      - TICKET_SERVICE_PORT=5001
+    restart: unless-stopped
+    networks:
+      - brivo-net
+
+  # Prometheus Alertmanager (Alert Routing & Notification Engine)
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    restart: unless-stopped
+    networks:
+      - brivo-net
+    depends_on:
+      - ticket-service
+
+  # Central Prometheus Server
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+    restart: unless-stopped
+    networks:
+      - brivo-net
+    depends_on:
+      - bridge-01
+      - bridge-02
+      - bridge-03
+      - cam
+      - edge-ai
+      - blackbox-exporter
+      - alertmanager
+
+  # Operations Center Grafana Dashboard
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    restart: unless-stopped
+    networks:
+      - brivo-net
+    depends_on:
+      - prometheus
+
+networks:
+  brivo-net:
+    driver: bridge

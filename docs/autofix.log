@@ -1,0 +1,35 @@
+[2026-10-27 08:41:40] ============================================================
+[2026-10-27 08:41:40] === Brivo Operations Fleet Auto-Fix Scanner Started ===
+[2026-10-27 08:41:41] [STATUS OK] bridge-01 is healthy on port 8001.
+[2026-10-27 08:41:41] [STATUS OK] bridge-02 is healthy on port 8002.
+[2026-10-27 08:41:41] [STATUS OK] bridge-03 is healthy on port 8003.
+[2026-10-27 08:41:41] === Scan Completed. Issues Found: 0, Auto-Healed: 0 ===
+[2026-10-27 08:41:41] ============================================================
+[2026-10-27 08:41:59] ============================================================
+[2026-10-27 08:41:59] === Brivo Operations Fleet Auto-Fix Scanner Started ===
+[2026-10-27 08:42:00] [STATUS OK] bridge-01 is healthy on port 8001.
+[2026-10-27 08:42:02] [ALERT TRIGGERED] bridge-02 is DOWN or unresponsive on port 8002!
+[2026-10-27 08:42:02] [DIAGNOSTICS] Running network triage for bridge-02 on port 8002...
+[2026-10-27 08:42:04] [DIAGNOSTICS] TCP Probe 127.0.0.1:8002 -> CLOSED / UNREACHABLE
+[2026-10-27 08:42:04] [DIAGNOSTICS] DNS check: 'localhost' resolved to 127.0.0.1 (OK)
+[2026-10-27 08:42:04] [DIAGNOSTICS] Docker container state for bridge-02: 'exited'
+[2026-10-27 08:42:04] [REMEDIATION] Attempting automated self-healing restart for bridge-02...
+[2026-10-27 08:42:05] [REMEDIATION] Docker restart issued successfully for bridge-02. Output: bridge-02
+[2026-10-27 08:42:08] [AUTO-FIX SUCCESS] bridge-02 recovered and passing /health checks! Incident resolved.
+[2026-10-27 08:42:08] [STATUS OK] bridge-03 is healthy on port 8003.
+[2026-10-27 08:42:08] === Scan Completed. Issues Found: 1, Auto-Healed: 1 ===
+[2026-10-27 08:42:08] ============================================================
+[2026-10-27 09:49:24] ============================================================
+[2026-10-27 09:49:24] === Brivo Operations Fleet Auto-Fix Scanner Started ===
+[2026-10-27 09:49:24] [STATUS OK] bridge-01 is healthy on port 8001.
+[2026-10-27 09:49:26] [ALERT TRIGGERED] bridge-02 is DOWN or unresponsive on port 8002!
+[2026-10-27 09:49:26] [DIAGNOSTICS] Running network triage for bridge-02 on port 8002...
+[2026-10-27 09:49:28] [DIAGNOSTICS] TCP Probe 127.0.0.1:8002 -> CLOSED / UNREACHABLE
+[2026-10-27 09:49:28] [DIAGNOSTICS] DNS check: 'localhost' resolved to 127.0.0.1 (OK)
+[2026-10-27 09:49:28] [DIAGNOSTICS] Docker container state for bridge-02: 'exited'
+[2026-10-27 09:49:28] [REMEDIATION] Attempting automated self-healing restart for bridge-02...
+[2026-10-27 09:49:29] [REMEDIATION] Docker restart issued successfully for bridge-02. Output: bridge-02
+[2026-10-27 09:49:32] [AUTO-FIX SUCCESS] bridge-02 recovered and passing /health checks! Incident resolved.
+[2026-10-27 09:49:32] [STATUS OK] bridge-03 is healthy on port 8003.
+[2026-10-27 09:49:32] === Scan Completed. Issues Found: 1, Auto-Healed: 1 ===
+[2026-10-27 09:49:32] ============================================================

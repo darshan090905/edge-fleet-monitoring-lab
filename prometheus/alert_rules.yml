@@ -1,0 +1,52 @@
+groups:
+  - name: edge_fleet_alerts
+    rules:
+      # Alert 1: Bridge Device Down / Offline
+      - alert: BridgeDown
+        expr: up{job="bridge_agents"} == 0
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Edge bridge {{ $labels.instance }} is offline"
+          description: "Bridge agent on {{ $labels.instance }} has stopped reporting health checks for >10s."
+
+      # Alert 2: IP Camera RTSP Stream Down
+      - alert: CameraStreamDown
+        expr: probe_success{job="blackbox_camera"} == 0
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Surveillance camera stream is offline"
+          description: "Blackbox prober failed to establish TCP connection to RTSP camera port 8554."
+
+      # Alert 3: High Disk Usage (>85%)
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 85
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Bridge {{ $labels.instance }} storage space critical"
+          description: "Root partition disk usage on {{ $labels.instance }} is above 85%."
+
+      # Alert 4: Sustained High CPU (>90% for 5 min)
+      - alert: HighCPU
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Bridge {{ $labels.instance }} CPU overload"
+          description: "CPU load on {{ $labels.instance }} has exceeded 90% for 5 minutes."
+
+      # Alert 5: Edge AI Detector Stalled (No frames processed for 2 minutes)
+      - alert: AIDetectorNoFrames
+        expr: rate(frames_processed_total[2m]) == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI People Counter is stalled"
+          description: "The edge-ai computer vision pipeline has processed 0 frames over the last 2 minutes."

@@ -1,0 +1,30 @@
+# Environment variables and secrets
+.env
+*.env
+*.pem
+*.key
+*.id_rsa
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+
+# IDE
+.vscode/
+.idea/

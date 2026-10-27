@@ -1,0 +1,40 @@
+name: CI Configuration & Code Validation
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    name: Lint & Rule Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Linting Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Run Flake8 Python Lint
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.git,__pycache__
+
+      - name: Validate Prometheus Alert Rules
+        run: |
+          docker run --rm -v $(pwd)/prometheus:/etc/prometheus prom/prometheus:v2.51.0 \
+            promtool check rules /etc/prometheus/alert_rules.yml
+
+      - name: Validate Docker Compose Syntax
+        run: |
+          docker compose config

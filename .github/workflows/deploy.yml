@@ -1,0 +1,40 @@
+name: CD Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Fleet to EC2
+    runs-on: ubuntu-latest
+    if: github.repository != ''
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy Fleet via SSH
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          # Sync repository files to EC2 instance
+          rsync -avz --exclude '.git' --exclude '.terraform' ./ $USER@$HOST:~/edge-fleet/
+
+          # Execute remote deployment
+          ssh $USER@$HOST << 'EOF'
+            set -e
+            cd ~/edge-fleet
+            docker compose down || true
+            docker compose up -d --build
+            docker compose ps
+          EOF
